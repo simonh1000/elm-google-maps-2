@@ -12383,15 +12383,28 @@ var _elm_lang$html$Html_Events$Options = F2(
 		return {stopPropagation: a, preventDefault: b};
 	});
 
-var _user$project$App$gmap = _elm_lang$html$Html$node('gmap');
-var _user$project$App$mapStyles = _elm_lang$html$Html_Attributes$style(
+var _user$project$Main$gmap = _elm_lang$html$Html$node('gmap');
+var _user$project$Main$mapStyles = _elm_lang$html$Html_Attributes$style(
 	_elm_lang$core$Native_List.fromArray(
 		[
 			{ctor: '_Tuple2', _0: 'display', _1: 'block'},
 			{ctor: '_Tuple2', _0: 'height', _1: '200px'},
 			{ctor: '_Tuple2', _0: 'width', _1: '200px'}
 		]));
-var _user$project$App$update = F2(
+var _user$project$Main$loadMap = _elm_lang$core$Native_Platform.outgoingPort(
+	'loadMap',
+	function (v) {
+		return {lat: v.lat, lng: v.lng};
+	});
+var _user$project$Main$setCenter = _elm_lang$core$Native_Platform.outgoingPort(
+	'setCenter',
+	function (v) {
+		return {
+			gmap: v.gmap,
+			center: {lat: v.center.lat, lng: v.center.lng}
+		};
+	});
+var _user$project$Main$update = F2(
 	function (message, model) {
 		var _p0 = message;
 		switch (_p0.ctor) {
@@ -12407,7 +12420,9 @@ var _user$project$App$update = F2(
 					_elm_lang$core$Platform_Cmd_ops['!'],
 					newModel,
 					_elm_lang$core$Native_List.fromArray(
-						[]));
+						[
+							_user$project$Main$setCenter(newModel)
+						]));
 			case 'JSMap':
 				return A2(
 					_elm_lang$core$Platform_Cmd_ops['!'],
@@ -12421,33 +12436,39 @@ var _user$project$App$update = F2(
 					_elm_lang$core$Platform_Cmd_ops['!'],
 					model,
 					_elm_lang$core$Native_List.fromArray(
-						[]));
+						[
+							_user$project$Main$loadMap(model.center)
+						]));
 		}
 	});
-var _user$project$App$Model = F2(
+var _user$project$Main$receiveMap = _elm_lang$core$Native_Platform.incomingPort('receiveMap', _elm_lang$core$Json_Decode$value);
+var _user$project$Main$Model = F2(
 	function (a, b) {
 		return {gmap: a, center: b};
 	});
-var _user$project$App$LatLng = F2(
+var _user$project$Main$LatLng = F2(
 	function (a, b) {
 		return {lat: a, lng: b};
 	});
-var _user$project$App$init = function () {
-	var center = A2(_user$project$App$LatLng, 43, 4.5);
-	return {
-		ctor: '_Tuple2',
-		_0: A2(_user$project$App$Model, _elm_lang$core$Json_Encode$null, center),
-		_1: _elm_lang$core$Platform_Cmd$none
-	};
-}();
-var _user$project$App$JSMap = function (a) {
+var _user$project$Main$JSMap = function (a) {
 	return {ctor: 'JSMap', _0: a};
 };
-var _user$project$App$Tick = function (a) {
+var _user$project$Main$Tick = function (a) {
 	return {ctor: 'Tick', _0: a};
 };
-var _user$project$App$North = {ctor: 'North'};
-var _user$project$App$view = function (model) {
+var _user$project$Main$init = function () {
+	var center = A2(_user$project$Main$LatLng, 43, 4.5);
+	return {
+		ctor: '_Tuple2',
+		_0: A2(
+			_user$project$Main$Model,
+			_elm_lang$core$Json_Encode$string('to be replaced by google map'),
+			center),
+		_1: A2(_elm_lang$core$Task$perform, _user$project$Main$Tick, _elm_lang$core$Time$now)
+	};
+}();
+var _user$project$Main$North = {ctor: 'North'};
+var _user$project$Main$view = function (model) {
 	return A2(
 		_elm_lang$html$Html$div,
 		_elm_lang$core$Native_List.fromArray(
@@ -12478,7 +12499,7 @@ var _user$project$App$view = function (model) {
 						_elm_lang$html$Html$button,
 						_elm_lang$core$Native_List.fromArray(
 							[
-								_elm_lang$html$Html_Events$onClick(_user$project$App$North)
+								_elm_lang$html$Html_Events$onClick(_user$project$Main$North)
 							]),
 						_elm_lang$core$Native_List.fromArray(
 							[
@@ -12506,27 +12527,27 @@ var _user$project$App$view = function (model) {
 								_elm_lang$html$Html$text('Javascript land')
 							])),
 						A2(
-						_user$project$App$gmap,
+						_user$project$Main$gmap,
 						_elm_lang$core$Native_List.fromArray(
-							[_user$project$App$mapStyles]),
+							[_user$project$Main$mapStyles]),
 						_elm_lang$core$Native_List.fromArray(
 							[]))
 					]))
 			]));
 };
-
 var _user$project$Main$main = _elm_lang$html$Html$program(
 	{
-		init: _user$project$App$init,
-		update: _user$project$App$update,
-		view: _user$project$App$view,
-		subscriptions: _elm_lang$core$Basics$always(_elm_lang$core$Platform_Sub$none)
+		init: _user$project$Main$init,
+		update: _user$project$Main$update,
+		view: _user$project$Main$view,
+		subscriptions: _elm_lang$core$Basics$always(
+			_user$project$Main$receiveMap(_user$project$Main$JSMap))
 	})();
 
 var Elm = {};
 Elm['Main'] = Elm['Main'] || {};
 if (typeof _user$project$Main$main !== 'undefined') {
-    _user$project$Main$main(Elm['Main'], 'Main', {"types":{"message":"App.Msg","aliases":{"Time.Time":{"type":"Float","args":[]}},"unions":{"Json.Encode.Value":{"tags":{"Value":[]},"args":[]},"App.Msg":{"tags":{"JSMap":["Json.Encode.Value"],"North":[],"Tick":["Time.Time"]},"args":[]}}},"versions":{"elm":"0.18.0"}});
+    _user$project$Main$main(Elm['Main'], 'Main', {"types":{"message":"Main.Msg","aliases":{"Time.Time":{"type":"Float","args":[]}},"unions":{"Main.Msg":{"tags":{"JSMap":["Json.Encode.Value"],"North":[],"Tick":["Time.Time"]},"args":[]},"Json.Encode.Value":{"tags":{"Value":[]},"args":[]}}},"versions":{"elm":"0.18.0"}});
 }
 
 if (typeof define === "function" && define['amd'])
