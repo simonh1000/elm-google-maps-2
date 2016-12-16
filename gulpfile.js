@@ -144,8 +144,8 @@ gulp.task('build', ['del'], function() {
 	runSequence('compilation', 'elm-compile');
 });
 
-gulp.task('default', ['compilation', 'elm-compile', 'watch-server']);
+// gulp.task('default', ['compilation', 'elm-compile', 'watch-server']);
 
-gulp.task('serverless', ['compilation', 'elm-compile', 'watch']);
+gulp.task('default', ['compilation', 'elm-compile', 'watch']);
 
 gulp.task('compile', ['compilation', 'elm-compile', 'watch']);

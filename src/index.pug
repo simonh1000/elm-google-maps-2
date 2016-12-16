@@ -5,7 +5,7 @@ html
         meta(name="viewport" content="width=device-width, initial-scale=1")
         meta(name="description", content="The beginnings of a great, typesafe application")
         title Elm fullstack starter
-        script(type="text/javascript" src="elm.js")
+        script(type="text/javascript" src="Main.js")
         link(rel="stylesheet" href="styles.css")
 
     body
@@ -14,8 +14,9 @@ html
             | Loading...
 
         script.
-            //- elm = Elm.Main.embed(document.getElementById('elm'));
-            elm = Elm.Main.fullscreen();
+            const node = document.getElementById('elm');
+            elm = Elm.Main.embed(node);
+            //- elm = Elm.Main.fullscreen();
 
             elm.ports.loadMap.subscribe(function(model) {
                 var mapDiv = document.getElementsByTagName('gmap')[0];
@@ -26,7 +27,7 @@ html
                   center: myLatlng
                 };
                 var gmap = new google.maps.Map(mapDiv, mapOptions);
-                /* We store the Google Map object in Elm */
+                /*We store the Google Map object in Elm*/
                 elm.ports.receiveMap.send(gmap);
             });
 
